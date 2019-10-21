@@ -5,6 +5,7 @@ Created on Wed Oct 16 15:23:49 2019
 @author: tushar
 """
 import sys
+import os
 import Raw
 from McCabe import get_code_complexity
 try:
@@ -24,7 +25,20 @@ def f(n):
     else:
         return "smaller than or equal to three"
 """
+path = '/home/tushar/Desktop/python-social-auth'
 
+files = []
+# r=root, d=directories, f = files
+for r, d, f in os.walk(path):
+    for file in f:
+        if '.py' in file:
+            files.append(os.path.join(r, file))
+
+allfile = ""
+for f in files:
+   # print(f)
+    singlefile = open(f,"r").read()
+    allfile +="\n" +singlefile
 
 clas = '''
 class A(object):
@@ -33,7 +47,7 @@ class A(object):
     def fib(self, n):
         pass
 '''
-
+clas = allfile
 stdout = sys.stdout
 strio = StringIO()
 sys.stdout = strio
@@ -52,12 +66,12 @@ def get_complexity_number(snippet, strio, max=0):
 
 CC = get_complexity_number(if_elif_else_dead_path, strio)
 sys.stdout = stdout
-print(CC)
+#print(CC)
 
 #CC1 = get_complexity_number(clas,strio)
 #print(CC1)
 
-loc = Raw.analyze(if_elif_else_dead_path)
+loc = Raw.analyze(clas)
 comment_percentage = loc.comments/(loc.loc-loc.blank-loc.comments)
 print("McCabe Cyclomatric Complexity: ", CC)
 print("LOC: ",loc.loc)

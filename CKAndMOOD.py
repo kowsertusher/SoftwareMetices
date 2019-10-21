@@ -7,8 +7,26 @@ Created on Thu Oct 17 11:38:38 2019
 
 import ast
 import copy
+import os
+import io
+
+path = '/home/tushar/Desktop/python-social-auth'
+
+files = []
+# r=root, d=directories, f = files
+for r, d, f in os.walk(path):
+    for file in f:
+        if '.py' in file:
+            files.append(os.path.join(r, file))
+
+allfile = ""
+for f in files:
+   # print(f)
+    singlefile = open(f,"r").read()
+    allfile +="\n" +singlefile
 
 mdef = '''
+import A
 class A(object):
     def meth(self):
         return sum(i for i in range(10) if i - 2 < 5)
@@ -36,13 +54,188 @@ class C(B):
         return 3
     
     '''
+mdef = open('atmSystem.py','r').read()
 
+def Feature_Envy(CBO,CF,LCOM):
+    if CBO > 5  and LCOM > 2 or LCOM ==0:
+        return True
+    elif CBO > 5 and CF > .6:
+        return True
+    else:
+        return False
+
+def GodClass(WMC,TCC):
+    if WMC > .5 and TCC > 20:
+        return True
+    else:
+        return False
 def weighted_method_per_class(source):
     pass
 
+def couplingBetweenObject(inheritance_tree, child_tree, astree):
+    all_classes = []
+    couple_all = []
+    CBO = 0.0
+    for classes in astree:
+        all_classes.append(classes.name)
+    #print(all_classes)
+    for class_obj in astree:
+        #print("Class Name: ", class_obj.name)
+        variable_count = 0
+        private_var_count = 0
+        class_attr= list()
+        class_pr_attr = list()
+        #print(class_obj.)
+        for func_obj in class_obj.body:
+            #print(func_obj.body)
+            CBO = 3.0
+            if isinstance(func_obj,ast.Assign):
+                if isinstance(variables,ast.Name):
+                            #print(variables.id)
+                    variable_count+=1
+                    if variables.id[0] == "_":
+                        private_var_count+=1
+                elif isinstance(variables, ast.Attribute):
+                    if variables.attr[0] == "_":
+                        class_attr.append(variables.attr)
+                        class_pr_attr.append(variables.attr)
+                        
+                    else:
+                        class_attr.append(variables.attr)
+                continue
+            for statements in func_obj.body:
+                if isinstance(statements,ast.Assign):
+                    #print(statements.value)
+                    for variables in statements.targets:
+                        #print(statements.targets)
+                        if isinstance(variables,ast.Tuple):
+                            if isinstance(variables, ast.Attribute):
+                                #print(variables.id)
+                                if variables.attr[0] == "_":
+                                    class_attr.append(variables.attr)
+                                    class_pr_attr.append(variables.attr)
+                                else:
+                                    class_attr.append(variables.attr)
+                            else:
+                                for var in variables.elts:
+                                    #print(var.id)
+                                    variable_count+=1
+                                    if var.id[0] == "_":
+                                        private_var_count+=1
+                        elif isinstance(variables,ast.Name):
+                            #print(variables.id)
+                            #print(variables.id)
+                            variable_count+=1
+                            if variables.id[0] == "_":
+                                private_var_count+=1
+                        elif isinstance(variables, ast.Attribute):
+                            #print(variables.attr)
+                            if variables.attr[0] == "_":
+                                class_attr.append(variables.attr)
+                                class_pr_attr.append(variables.attr)
+                            else:
+                                class_attr.append(variables.attr)
+        variable_count +=len(set(class_attr))
+        private_var_count +=len(set(class_pr_attr))
+        #print(class_obj.name)
+        #print(class_attr)
+        #print(class_pr_attr)
+        couple = 0
+        
+        for second in all_classes:
+            if class_obj.name != second and (second in class_attr or second in class_pr_attr):
+                couple += 1
+        couple_all.append(couple)
+    #print(couple_all)
+    
+    for i in couple_all:
+        CBO+= i
+    print("CBO",CBO)
+def lackofCohetion(inheritance_tree, child_tree, astree):
+    all_classes = []
+    lack = dict()
+    for classes in astree:
+        all_classes.append(classes.name)
+        lack[classes.name] = []
+    #print(all_classes)
+    for class_obj in astree:
+        #print("Class Name: ", class_obj.name)
+        variable_count = 0
+        private_var_count = 0
+        class_attr= list()
+        class_pr_attr = list()
+        #print(class_obj.)
+        for func_obj in class_obj.body:
+            #print(func_obj.body)
+            if isinstance(func_obj,ast.Assign):
+                if isinstance(variables,ast.Name):
+                            #print(variables.id)
+                    variable_count+=1
+                    if variables.id[0] == "_":
+                        private_var_count+=1
+                elif isinstance(variables, ast.Attribute):
+                    if variables.attr[0] == "_":
+                        class_attr.append(variables.attr)
+                        class_pr_attr.append(variables.attr)
+                    else:
+                        class_attr.append(variables.attr)
+                continue
+            for statements in func_obj.body:
+                if isinstance(statements,ast.Assign):
+                    #print(statements.value)
+                    for variables in statements.targets:
+                        #print(statements.targets)
+                        if isinstance(variables,ast.Tuple):
+                            if isinstance(variables, ast.Attribute):
+                                #print(variables.id)
+                                if variables.attr[0] == "_":
+                                    class_attr.append(variables.attr)
+                                    class_pr_attr.append(variables.attr)
+                                else:
+                                    class_attr.append(variables.attr)
+                            else:
+                                for var in variables.elts:
+                                    #print(var.id)
+                                    variable_count+=1
+                                    if var.id[0] == "_":
+                                        private_var_count+=1
+                        elif isinstance(variables,ast.Name):
+                            #print(variables.id)
+                            #print(variables.id)
+                            variable_count+=1
+                            if variables.id[0] == "_":
+                                private_var_count+=1
+                        elif isinstance(variables, ast.Attribute):
+                            #print(variables.attr)
+                            if variables.attr[0] == "_":
+                                class_attr.append(variables.attr)
+                                class_pr_attr.append(variables.attr)
+                            else:
+                                class_attr.append(variables.attr)
+        variable_count +=len(set(class_attr))
+        private_var_count +=len(set(class_pr_attr))
+        #print(class_obj.name)
+        #print(class_attr)
+        #print(class_pr_attr)
+        LCOM = 0.0
+        for second in all_classes:
+            if class_obj.name != second and (second in class_attr or second in class_pr_attr):
+                lack[class_obj.name] = second
+                    
+    for key in lack:
+        valueList = lack[key]
+        for value in valueList:
+            valueList1 = lack[value]
+            for value1 in valueList1:
+                if value1 == key:
+                    LCOM += 1
+    print("LCOM",LCOM)
+        
+    
+
 def inheritance_tree(source):
     a = ast.parse(mdef)
-    all_node = set()
+    all_node = list()
     definitions = [n for n in ast.walk(a) if type(n) == ast.ClassDef]
     #n for n in ast.walk(a) print(n)
     #for node in ast.walk(a):
@@ -51,16 +244,18 @@ def inheritance_tree(source):
     #print(definitions)
     inheritance_tree = {}
     for i in definitions:
-        all_node.update(i.name)
+        all_node.append(i.name)
         inheritance_tree[i.name] = []
         #print(i.name)
         for j in i.bases:
-            if not j.id== "object": 
-                inheritance_tree[i.name].append(j.id)
+            if not isinstance(j,ast.Attribute):
+                if not j.id== "object": 
+                    inheritance_tree[i.name].append(j.id)
                 #print("    Inherited",j.id)
     return inheritance_tree, all_node, definitions
 
 def depth_of_inheritance_tree_util(tree,counter, max_counter):
+
     for child in tree:
         counter+=1
         max_counter = depth_of_inheritance_tree(tree, child, counter, max_counter)
@@ -69,16 +264,18 @@ def depth_of_inheritance_tree_util(tree,counter, max_counter):
         #print(child, max_counter)
     return max_counter
 def depth_of_inheritance_tree(tree, node, counter, max_counter):
+    #print(node)
+    #print(tree)
     for child in tree[node]:
         if not child == None and not child == "":
             counter+=1
-
             max_counter = depth_of_inheritance_tree(tree, child, counter, max_counter)
             max_counter = max(max_counter, counter)
             #print(max_counter, node)
             counter-=1
     return max_counter
 def Number_of_child(tree, all_node):
+    #print(all_node)
     child = {}
     for i in all_node:
         child[i] = []
@@ -96,20 +293,33 @@ def attr_hiding_factor(astree):
         #print("Class Name: ", class_obj.name)
         variable_count = 0
         private_var_count = 0
-        class_attr= set()
-        class_pr_attr = set()
+        class_attr= list()
+        class_pr_attr = list()
         for func_obj in class_obj.body:
-
+            #print(func_obj.name)
+            if isinstance(func_obj,ast.Assign):
+                if isinstance(variables,ast.Name):
+                            #print(variables.id)
+                    variable_count+=1
+                    if variables.id[0] == "_":
+                        private_var_count+=1
+                elif isinstance(variables, ast.Attribute):
+                    if variables.attr[0] == "_":
+                        class_attr.append(variables.attr)
+                        class_pr_attr.append(variables.attr)
+                    else:
+                        class_attr.append(variables.attr)
+                continue
             for statements in func_obj.body:
                 if isinstance(statements,ast.Assign):
                     for variables in statements.targets:
                         if isinstance(variables,ast.Tuple):
                             if isinstance(variables, ast.Attribute):
                                 if variables.attr[0] == "_":
-                                    class_attr.update(variables.attr)
-                                    class_pr_attr.update(variables.attr)
+                                    class_attr.append(variables.attr)
+                                    class_pr_attr.append(variables.attr)
                                 else:
-                                    class_attr.update(variables.attr)
+                                    class_attr.append(variables.attr)
                             else:
                                 for var in variables.elts:
                                     #print(var.id)
@@ -123,12 +333,12 @@ def attr_hiding_factor(astree):
                                 private_var_count+=1
                         elif isinstance(variables, ast.Attribute):
                             if variables.attr[0] == "_":
-                                class_attr.update(variables.attr)
-                                class_pr_attr.update(variables.attr)
+                                class_attr.append(variables.attr)
+                                class_pr_attr.append(variables.attr)
                             else:
-                                class_attr.update(variables.attr)
-        variable_count +=len(class_attr)+len(class_pr_attr)
-        private_var_count +=len(class_pr_attr)
+                                class_attr.append(variables.attr)
+        variable_count +=len(set(class_attr))+len(set(class_pr_attr))
+        private_var_count +=len(set(class_pr_attr))
         dec_sum += variable_count
         private_sum += private_var_count
         if variable_count>0:
@@ -136,6 +346,7 @@ def attr_hiding_factor(astree):
         else:
             hiding_factor = 0
         #print("   Class "+class_obj.name+"'s AHF is", hiding_factor)
+        #print(set(class_attr))
     AHF = private_sum/dec_sum
     print("AHF ",AHF)
             
@@ -148,6 +359,8 @@ def method_hiding_factor(astree):
         function_count = 0
         private_func_count = 0
         for func_obj in class_obj.body:
+            if isinstance(func_obj,ast.Assign):
+                continue
             function_count += 1
             if func_obj.name[0] == "_":
                 private_func_count += 1
@@ -199,6 +412,8 @@ def method_inheritance_factor(inheritance_tree, child_tree, astree):
     for classes in astree:
         all_method = []
         for methods in classes.body:
+            if isinstance(methods,ast.Assign):
+                continue
             all_method.append(methods.name)
         class_to_method[classes.name] = all_method.copy()
     class_inherit_method = copy.deepcopy(class_to_method) 
@@ -237,20 +452,33 @@ def attr_inheritance_factor(inheritance_tree, child_tree, astree):
         #print("Class Name: ", class_obj.name)
         variable_count = 0
         private_var_count = 0
-        class_attr= set()
-        class_pr_attr = set()
+        class_attr= list()
+        class_pr_attr = list()
         for func_obj in class_obj.body:
-
+            #if isinstance(func_obj)
+            if isinstance(func_obj,ast.Assign):
+                if isinstance(variables,ast.Name):
+                            #print(variables.id)
+                    variable_count+=1
+                    if variables.id[0] == "_":
+                        private_var_count+=1
+                elif isinstance(variables, ast.Attribute):
+                    if variables.attr[0] == "_":
+                        class_attr.append(variables.attr)
+                        class_pr_attr.append(variables.attr)
+                    else:
+                        class_attr.append(variables.attr)
+                continue
             for statements in func_obj.body:
                 if isinstance(statements,ast.Assign):
                     for variables in statements.targets:
                         if isinstance(variables,ast.Tuple):
                             if isinstance(variables, ast.Attribute):
                                 if variables.attr[0] == "_":
-                                    class_attr.update(variables.attr)
-                                    class_pr_attr.update(variables.attr)
+                                    class_attr.append(variables.attr)
+                                    class_pr_attr.append(variables.attr)
                                 else:
-                                    class_attr.update(variables.attr)
+                                    class_attr.append(variables.attr)
                             else:
                                 for var in variables.elts:
                                     #print(var.id)
@@ -264,11 +492,11 @@ def attr_inheritance_factor(inheritance_tree, child_tree, astree):
                                 private_var_count+=1
                         elif isinstance(variables, ast.Attribute):
                             if variables.attr[0] == "_":
-                                class_attr.update(variables.attr)
-                                class_pr_attr.update(variables.attr)
+                                class_attr.append(variables.attr)
+                                class_pr_attr.append(variables.attr)
                             else:
-                                class_attr.update(variables.attr)
-        variable =list(class_attr)+list(class_pr_attr)
+                                class_attr.append(variables.attr)
+        variable =list(set(class_attr))+list(set(class_pr_attr))
         class_to_attribute[class_obj.name] = variable
     #print(class_to_attribute)
     class_inherit_attribute = copy.deepcopy(class_to_attribute) 
@@ -309,6 +537,8 @@ def polymorphism_factor(inheritance_tree, child_tree, astree):
     for classes in astree:
         all_method = []
         for methods in classes.body:
+            if isinstance(methods,ast.Assign):
+                continue
             all_method.append(methods.name)
         class_to_method[classes.name] = all_method.copy()
     class_inherit_method = copy.deepcopy(class_to_method) 
@@ -359,11 +589,24 @@ def coupling_factor(inheritance_tree, child_tree, astree):
         #print("Class Name: ", class_obj.name)
         variable_count = 0
         private_var_count = 0
-        class_attr= set()
-        class_pr_attr = set()
+        class_attr= list()
+        class_pr_attr = list()
         #print(class_obj.)
         for func_obj in class_obj.body:
             #print(func_obj.body)
+            if isinstance(func_obj,ast.Assign):
+                if isinstance(variables,ast.Name):
+                            #print(variables.id)
+                    variable_count+=1
+                    if variables.id[0] == "_":
+                        private_var_count+=1
+                elif isinstance(variables, ast.Attribute):
+                    if variables.attr[0] == "_":
+                        class_attr.append(variables.attr)
+                        class_pr_attr.append(variables.attr)
+                    else:
+                        class_attr.append(variables.attr)
+                continue
             for statements in func_obj.body:
                 if isinstance(statements,ast.Assign):
                     #print(statements.value)
@@ -373,10 +616,10 @@ def coupling_factor(inheritance_tree, child_tree, astree):
                             if isinstance(variables, ast.Attribute):
                                 #print(variables.id)
                                 if variables.attr[0] == "_":
-                                    class_attr.update(variables.attr)
-                                    class_pr_attr.update(variables.attr)
+                                    class_attr.append(variables.attr)
+                                    class_pr_attr.append(variables.attr)
                                 else:
-                                    class_attr.update(variables.attr)
+                                    class_attr.append(variables.attr)
                             else:
                                 for var in variables.elts:
                                     #print(var.id)
@@ -392,12 +635,12 @@ def coupling_factor(inheritance_tree, child_tree, astree):
                         elif isinstance(variables, ast.Attribute):
                             #print(variables.attr)
                             if variables.attr[0] == "_":
-                                class_attr.update(variables.attr)
-                                class_pr_attr.update(variables.attr)
+                                class_attr.append(variables.attr)
+                                class_pr_attr.append(variables.attr)
                             else:
-                                class_attr.update(variables.attr)
-        variable_count +=len(class_attr)
-        private_var_count +=len(class_pr_attr)
+                                class_attr.append(variables.attr)
+        variable_count +=len(set(class_attr))
+        private_var_count +=len(set(class_pr_attr))
         #print(class_obj.name)
         #print(class_attr)
         #print(class_pr_attr)
@@ -429,6 +672,8 @@ DIT = depth_of_inheritance_tree_util(inheritance_tree, 0, 0)
 print("DIT",DIT)
 child_tree = Number_of_child(inheritance_tree, all_node)
 print("Number Of Child",child_tree)
+couplingBetweenObject(inheritance_tree, child_tree, astree)
+lackofCohetion(inheritance_tree, child_tree, astree)
 attr_hiding_factor(astree)
 method_hiding_factor(astree)
 method_inheritance_factor(inheritance_tree, child_tree, astree)
