@@ -8,7 +8,8 @@
 1. Weighted Method per Class
 2. Depth of Inheritance Tree
 3. Number of Child
-4. Coupling between Objects (Not Implememnted yet)
+4. Coupling between Objects 
+5. Lack of cohesion
 
 **MOOD**
 1. Method Hiding Factor
