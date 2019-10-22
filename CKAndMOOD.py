@@ -9,7 +9,7 @@ import ast
 import copy
 import os
 import io
-
+import pandas as pd
 path = '/home/tushar/Desktop/python-social-auth'
 
 files = []
@@ -72,166 +72,91 @@ def GodClass(WMC,TCC):
 def weighted_method_per_class(source):
     pass
 
+
 def couplingBetweenObject(inheritance_tree, child_tree, astree):
-    all_classes = []
-    couple_all = []
-    CBO = 0.0
-    for classes in astree:
-        all_classes.append(classes.name)
-    #print(all_classes)
-    for class_obj in astree:
-        #print("Class Name: ", class_obj.name)
-        variable_count = 0
-        private_var_count = 0
-        class_attr= list()
-        class_pr_attr = list()
-        #print(class_obj.)
-        for func_obj in class_obj.body:
-            #print(func_obj.body)
-            CBO = 3.0
-            if isinstance(func_obj,ast.Assign):
-                if isinstance(variables,ast.Name):
-                            #print(variables.id)
-                    variable_count+=1
-                    if variables.id[0] == "_":
-                        private_var_count+=1
-                elif isinstance(variables, ast.Attribute):
-                    if variables.attr[0] == "_":
-                        class_attr.append(variables.attr)
-                        class_pr_attr.append(variables.attr)
-                        
-                    else:
-                        class_attr.append(variables.attr)
-                continue
-            for statements in func_obj.body:
-                if isinstance(statements,ast.Assign):
-                    #print(statements.value)
-                    for variables in statements.targets:
-                        #print(statements.targets)
-                        if isinstance(variables,ast.Tuple):
-                            if isinstance(variables, ast.Attribute):
-                                #print(variables.id)
-                                if variables.attr[0] == "_":
-                                    class_attr.append(variables.attr)
-                                    class_pr_attr.append(variables.attr)
-                                else:
-                                    class_attr.append(variables.attr)
-                            else:
-                                for var in variables.elts:
-                                    #print(var.id)
-                                    variable_count+=1
-                                    if var.id[0] == "_":
-                                        private_var_count+=1
-                        elif isinstance(variables,ast.Name):
-                            #print(variables.id)
-                            #print(variables.id)
-                            variable_count+=1
-                            if variables.id[0] == "_":
-                                private_var_count+=1
-                        elif isinstance(variables, ast.Attribute):
-                            #print(variables.attr)
-                            if variables.attr[0] == "_":
-                                class_attr.append(variables.attr)
-                                class_pr_attr.append(variables.attr)
-                            else:
-                                class_attr.append(variables.attr)
-        variable_count +=len(set(class_attr))
-        private_var_count +=len(set(class_pr_attr))
-        #print(class_obj.name)
-        #print(class_attr)
-        #print(class_pr_attr)
-        couple = 0
-        
-        for second in all_classes:
-            if class_obj.name != second and (second in class_attr or second in class_pr_attr):
-                couple += 1
-        couple_all.append(couple)
-    #print(couple_all)
-    
-    for i in couple_all:
-        CBO+= i
+    #f.write("\n")
+    #f.write("Metrics Name: Coupling Factor")
+    #f.write("\n")
+    classes = []
+    for clas in astree:
+        classes.append(clas.name)
+    #f.write(classes)
+    #df = pd.DataFrame(np.zeros(len(classes), len(classes)))
+    df = pd.DataFrame(0, index=range(len(classes)), columns=range(len(classes)))
+    #f.write(df)
+    df.columns = classes
+    df.index = classes
+    #f.write(df)      
+    coupling = 0
+    CBO = 0
+    for clas in astree:
+        for line in clas.body:
+            if isinstance(line, ast.Assign) and isinstance(line.value, ast.Call):
+                if isinstance(line.value.func, ast.Name):
+                    if line.value.func.id in classes:
+                        coupling+=1
+                        #print("Found", line.value.func.id)
+                        df[clas.name][line.value.func.id] = 1
+    #print(df.to_string())
+    CBO = 0
+    for clas in astree:
+        for funcs in clas.body:
+            if isinstance(funcs, ast.FunctionDef):
+                for line in funcs.body:
+                    if isinstance(line, ast.Assign) and isinstance(line.value, ast.Call):
+                        if isinstance(line.value.func, ast.Name):
+                            if line.value.func.id in classes:
+                                coupling+=1
+                                #print("Found")
+                                df[clas.name][line.value.func.id] = 1
+                                CBO += 1
+   # f.write("Coupling Between Objects: \n")
+    #CBO = df.to_string()
+    #f.write("\n    COF: "+str(coupling/len(classes))+str("\n"))
     print("CBO",CBO)
+
 def lackofCohetion(inheritance_tree, child_tree, astree):
-    all_classes = []
-    lack = dict()
-    for classes in astree:
-        all_classes.append(classes.name)
-        lack[classes.name] = []
-    #print(all_classes)
-    for class_obj in astree:
-        #print("Class Name: ", class_obj.name)
-        variable_count = 0
-        private_var_count = 0
-        class_attr= list()
-        class_pr_attr = list()
-        #print(class_obj.)
-        for func_obj in class_obj.body:
-            #print(func_obj.body)
-            if isinstance(func_obj,ast.Assign):
-                if isinstance(variables,ast.Name):
-                            #print(variables.id)
-                    variable_count+=1
-                    if variables.id[0] == "_":
-                        private_var_count+=1
-                elif isinstance(variables, ast.Attribute):
-                    if variables.attr[0] == "_":
-                        class_attr.append(variables.attr)
-                        class_pr_attr.append(variables.attr)
-                    else:
-                        class_attr.append(variables.attr)
-                continue
-            for statements in func_obj.body:
-                if isinstance(statements,ast.Assign):
-                    #print(statements.value)
-                    for variables in statements.targets:
-                        #print(statements.targets)
-                        if isinstance(variables,ast.Tuple):
-                            if isinstance(variables, ast.Attribute):
-                                #print(variables.id)
-                                if variables.attr[0] == "_":
-                                    class_attr.append(variables.attr)
-                                    class_pr_attr.append(variables.attr)
-                                else:
-                                    class_attr.append(variables.attr)
-                            else:
-                                for var in variables.elts:
-                                    #print(var.id)
-                                    variable_count+=1
-                                    if var.id[0] == "_":
-                                        private_var_count+=1
-                        elif isinstance(variables,ast.Name):
-                            #print(variables.id)
-                            #print(variables.id)
-                            variable_count+=1
-                            if variables.id[0] == "_":
-                                private_var_count+=1
-                        elif isinstance(variables, ast.Attribute):
-                            #print(variables.attr)
-                            if variables.attr[0] == "_":
-                                class_attr.append(variables.attr)
-                                class_pr_attr.append(variables.attr)
-                            else:
-                                class_attr.append(variables.attr)
-        variable_count +=len(set(class_attr))
-        private_var_count +=len(set(class_pr_attr))
-        #print(class_obj.name)
-        #print(class_attr)
-        #print(class_pr_attr)
-        LCOM = 0.0
-        for second in all_classes:
-            if class_obj.name != second and (second in class_attr or second in class_pr_attr):
-                lack[class_obj.name] = second
-                    
-    for key in lack:
-        valueList = lack[key]
-        for value in valueList:
-            valueList1 = lack[value]
-            for value1 in valueList1:
-                if value1 == key:
-                    LCOM += 1
-    print("LCOM",LCOM)
-        
-    
+    classes = []
+    for clas in astree:
+        classes.append(clas.name)
+    #f.write(classes)
+    #df = pd.DataFrame(np.zeros(len(classes), len(classes)))
+    df = pd.DataFrame(0, index=range(len(classes)), columns=range(len(classes)))
+    #f.write(df)
+    df.columns = classes
+    df.index = classes
+    #f.write(df)      
+    coupling = 0
+    LCOM = 0
+    for clas in astree:
+        for line in clas.body:
+            if isinstance(line, ast.Assign) and isinstance(line.value, ast.Call):
+                if isinstance(line.value.func, ast.Name):
+                    if line.value.func.id in classes:
+                        coupling+=1
+                        #print("Found", line.value.func.id)
+                        df[clas.name][line.value.func.id] = 1
+    #print(df.to_string())
+   
+    for clas in astree:
+        for funcs in clas.body:
+            if isinstance(funcs, ast.FunctionDef):
+                for line in funcs.body:
+                    if isinstance(line, ast.Assign) and isinstance(line.value, ast.Call):
+                        if isinstance(line.value.func, ast.Name):
+                            if line.value.func.id in classes:
+                                coupling+=1
+                                #print("Found")
+                                df[clas.name][line.value.func.id] = 1
+   # f.write("Coupling Between Objects: \n")
+    #CBO = df.to_string()
+    #f.write("\n    COF: "+str(coupling/len(classes))+str("\n"))
+    #print("CBO",CBO)
+    for i in classes:
+        for j in classes:
+            if df[i][j] == 1 and df [j][i]==1:
+                LCOM += 1
+    print("LCOM",LCOM)   
 
 def inheritance_tree(source):
     a = ast.parse(mdef)
@@ -580,90 +505,43 @@ def polymorphism_factor(inheritance_tree, child_tree, astree):
     print("MOF ",MOF)
 
 def coupling_factor(inheritance_tree, child_tree, astree):
-    all_classes = []
-    couple_all = []
-    for classes in astree:
-        all_classes.append(classes.name)
-    #print(all_classes)
-    for class_obj in astree:
-        #print("Class Name: ", class_obj.name)
-        variable_count = 0
-        private_var_count = 0
-        class_attr= list()
-        class_pr_attr = list()
-        #print(class_obj.)
-        for func_obj in class_obj.body:
-            #print(func_obj.body)
-            if isinstance(func_obj,ast.Assign):
-                if isinstance(variables,ast.Name):
-                            #print(variables.id)
-                    variable_count+=1
-                    if variables.id[0] == "_":
-                        private_var_count+=1
-                elif isinstance(variables, ast.Attribute):
-                    if variables.attr[0] == "_":
-                        class_attr.append(variables.attr)
-                        class_pr_attr.append(variables.attr)
-                    else:
-                        class_attr.append(variables.attr)
-                continue
-            for statements in func_obj.body:
-                if isinstance(statements,ast.Assign):
-                    #print(statements.value)
-                    for variables in statements.targets:
-                        #print(statements.targets)
-                        if isinstance(variables,ast.Tuple):
-                            if isinstance(variables, ast.Attribute):
-                                #print(variables.id)
-                                if variables.attr[0] == "_":
-                                    class_attr.append(variables.attr)
-                                    class_pr_attr.append(variables.attr)
-                                else:
-                                    class_attr.append(variables.attr)
-                            else:
-                                for var in variables.elts:
-                                    #print(var.id)
-                                    variable_count+=1
-                                    if var.id[0] == "_":
-                                        private_var_count+=1
-                        elif isinstance(variables,ast.Name):
-                            #print(variables.id)
-                            #print(variables.id)
-                            variable_count+=1
-                            if variables.id[0] == "_":
-                                private_var_count+=1
-                        elif isinstance(variables, ast.Attribute):
-                            #print(variables.attr)
-                            if variables.attr[0] == "_":
-                                class_attr.append(variables.attr)
-                                class_pr_attr.append(variables.attr)
-                            else:
-                                class_attr.append(variables.attr)
-        variable_count +=len(set(class_attr))
-        private_var_count +=len(set(class_pr_attr))
-        #print(class_obj.name)
-        #print(class_attr)
-        #print(class_pr_attr)
-        couple = 0
-        
-        for second in all_classes:
-            if class_obj.name != second and (second in class_attr or second in class_pr_attr):
-                couple += 1
-        couple_all.append(couple)
-    #print(couple_all)
-    CF = 0.0
-    couple_sum = 0.0
-    for i in couple_all:
-        couple_sum += i
-    dc_sum = 0.0
-    #print(child_tree)
-    for i in child_tree:
-        dc_sum += len(child_tree[i])
-    #print(dc_sum)
-    devide = (((len(all_classes)*len(all_classes))-len(all_classes)-2*dc_sum))
-    if devide != 0:
-        CF = (couple_sum / devide)
-    print("CF ",CF)
+        #f.write("\n")
+    #f.write("Metrics Name: Coupling Factor")
+    #f.write("\n")
+    classes = []
+    for clas in astree:
+        classes.append(clas.name)
+    #f.write(classes)
+    #df = pd.DataFrame(np.zeros(len(classes), len(classes)))
+    df = pd.DataFrame(0, index=range(len(classes)), columns=range(len(classes)))
+    #f.write(df)
+    df.columns = classes
+    df.index = classes
+    #f.write(df)      
+    coupling = 0
+    for clas in astree:
+        for line in clas.body:
+            if isinstance(line, ast.Assign) and isinstance(line.value, ast.Call):
+                if isinstance(line.value.func, ast.Name):
+                    if line.value.func.id in classes:
+                        coupling+=1
+                        #print("Found", line.value.func.id)
+                        df[clas.name][line.value.func.id] = 1
+    #print(df.to_string())
+   
+    for clas in astree:
+        for funcs in clas.body:
+            if isinstance(funcs, ast.FunctionDef):
+                for line in funcs.body:
+                    if isinstance(line, ast.Assign) and isinstance(line.value, ast.Call):
+                        if isinstance(line.value.func, ast.Name):
+                            if line.value.func.id in classes:
+                                coupling+=1
+                                #print("Found")
+                                df[clas.name][line.value.func.id] = 1
+   # f.write("Coupling Between Objects: \n")
+    CBO = df.to_string()
+    print("COF: "+str(coupling/len(classes))+str("\n"))
 
     
 
